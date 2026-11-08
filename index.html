@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIGGEST — EARN. SIMPLY.</title>
+<style>
+:root { --bg:#070707; --card:#111; --border:#222; --accent:#e8b44a; --accent-dim:#2a1e05; --muted:#888; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:#fff; min-height:100vh; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+.top { padding:18px 20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #161616; }
+.logo { font-family:Georgia,serif; font-size:26px; letter-spacing:1px; }
+.logo small { display:block; font-size:10px; letter-spacing:3px; color:var(--muted); margin-top:2px; }
+.page { padding:20px; max-width:480px; margin:0 auto; }
+h1 { font-size:28px; font-weight:500; margin-bottom:8px; font-family:Georgia,serif; }
+.notice { background:var(--accent-dim); color:var(--accent); padding:12px 14px; border-radius:12px; font-size:13px; margin:16px 0 20px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:22px; margin-bottom:16px; }
+.balance { font-size:48px; font-weight:600; margin:8px 0 4px; }
+.sub { color:var(--muted); font-size:13px; }
+label { display:block; font-size:11px; letter-spacing:1.5px; color:var(--muted); margin:14px 0 6px; text-transform:uppercase; }
+input { width:100%; padding:14px; background:#1a1a1a; border:1px solid #2a2a2a; color:#fff; border-radius:12px; font-size:15px; }
+.btn { width:100%; padding:15px; background:#2a2a2a; border:none; color:#fff; border-radius:14px; font-size:15px; font-weight:500; cursor:pointer; margin-top:8px; }
+.btn.primary { background:var(--accent); color:#111; font-weight:600; }
+.taskBox { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; }
+.taskBox h3 { font-size:15px; }
+.taskBox p { color:var(--muted); font-size:13px; margin-top:2px; }
+.taskBtn { background:#2a2a2a; color:#fff; border:none; padding:10px 16px; border-radius:10px; font-size:13px; cursor:pointer; }
+.taskBtn.done { opacity:0.5; }
+.bottom { position:fixed; bottom:0; left:0; right:0; background:#0a0a0a; display:flex; justify-content:space-around; padding:10px 0 14px; border-top:1px solid #1a1a1a; font-size:11px; color:var(--muted); }
+.hidden { display:none !important; }
+.userRow { background:#151515; padding:12px 14px; border-radius:10px; margin:8px 0; display:flex; justify-content:space-between; align-items:center; font-size:13px; }
+.logout { background:none; border:1px solid #333; color:#aaa; padding:6px 12px; border-radius:8px; font-size:12px; cursor:pointer; }
+</style>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyBAgJN-lzbwBiCz0PRm1dZJ1GnpGu76OTw",
+  authDomain: "adselectbiggest.firebaseapp.com",
+  projectId: "adselectbiggest",
+  storageBucket: "adselectbiggest.firebasestorage.app",
+  messagingSenderId: "735881012710",
+  appId: "1:735881012710:web:c5e494a45255be30876227",
+  measurementId: "G-EJ7SL8PMQC"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+window.db=db; window.doc=doc; window.setDoc=setDoc; window.getDoc=getDoc; window.updateDoc=updateDoc; window.collection=collection; window.getDocs=getDocs;
+</script>
+</head>
+<body>
+<div id="authPage">
+<div class="top"><div class="logo">BIGGEST<small>EARN. SIMPLY.</small></div><button class="logout" onclick="showAdmin()">ADMIN</button></div>
+<div class="page">
+<h1>create account</h1>
+<div class="notice">FIREBASE ONLINE LIVE - $0.10 bonus</div>
+<label>Full Name</label><input id="regName" placeholder="Your name">
+<label>Username</label><input id="regUser" placeholder="big_og24">
+<label>Email</label><input id="regEmail" placeholder="you@email.com">
+<button class="btn primary" onclick="register()">Create Account</button>
+<p style="text-align:center;margin-top:14px;font-size:13px;color:#888">Have account? <a href="#" onclick="loadUser()" style="color:#fff">Login</a></p>
+</div>
+</div>
+
+<div id="homePage" class="hidden">
+<div class="top"><div style="font-size:18px">hello, <span id="helloUser"></span></div><button class="logout" onclick="logout()">Logout</button></div>
+<div class="page">
+<div class="card"><div class="sub" style="letter-spacing:3px">BIGGEST - FIREBASE LIVE</div><div class="balance">$<span id="bal">0.10</span></div><div class="sub" id="userCode">USER</div></div>
+<button class="btn" onclick="cashout()">Cash Out - Min $5</button>
+<div class="taskBox" style="margin-top:16px"><div><h3>Daily Bonus · Day <span id="dayNum">1</span>/30</h3><p>Reward $0.10</p></div><button class="taskBtn" id="claimBtn" onclick="claimDaily()">Claim</button></div>
+<div style="display:flex;justify-content:space-between;font-size:13px;margin:14px 2px"><span style="color:#888">EARNED TODAY</span><span style="color:#e8b44a">$<span id="earnedToday">0.10</span></span></div>
+<div class="taskBox"><div><h3>📺 YouTube Video</h3><p>Watch = $0.10 - 1 per day</p></div><button class="taskBtn" id="ytBtn" onclick="doYoutube()">Watch</button></div>
+<div style="height:80px"></div>
+</div>
+</div>
+
+<div id="adminPage" class="hidden">
+<div class="top"><div class="logo" style="font-size:20px">BIGGEST ADMIN</div><button class="logout" onclick="backHome()">Back</button></div>
+<div class="page">
+<label>Admin Password</label><input id="adminPass" type="password" placeholder="Biggest2026">
+<button class="btn" onclick="checkAdmin()">Enter Admin</button>
+<div id="adminContent" class="hidden">
+<div style="margin:16px 0;font-size:13px">Total Users: <b id="totalUsers">0</b> - Firebase Live</div>
+<div id="usersList"></div>
+</div>
+</div>
+</div>
+
+<div class="bottom" id="navBar" style="display:none"><div>🏠<br>HOME</div><div>▶️<br>EARN</div><div>👥<br>TEAM</div><div onclick="cashout()">👛<br>WALLET</div><div onclick="showAdmin()">👤<br>ME</div></div>
+
+<script>
+let currentUser=localStorage.getItem("biggest_current");
+async function register(){
+  let user=document.getElementById('regUser').value||"user"+Math.floor(Math.random()*999);
+  let name=document.getElementById('regName').value||"User";
+  let email=document.getElementById('regEmail').value||"";
+  try{
+    await window.setDoc(window.doc(window.db,"users",user),{name:name,email:email,balance:0.10,earned:0.10,day:1,lastClaim:"",lastYt:""});
+    currentUser=user; localStorage.setItem("biggest_current",user); showHome();
+  }catch(e){ alert("Error: Go Firebase > Firestore > Create database in test mode. "+e.message) }
+}
+async function getU(){ let s=await window.getDoc(window.doc(window.db,"users",currentUser)); return s.data(); }
+async function showHome(){
+  document.getElementById('authPage').classList.add('hidden'); document.getElementById('adminPage').classList.add('hidden'); document.getElementById('homePage').classList.remove('hidden'); document.getElementById('navBar').style.display='flex';
+  document.getElementById('helloUser').textContent=currentUser; document.getElementById('userCode').textContent="ID: "+currentUser.toUpperCase(); refreshUI();
+}
+async function refreshUI(){ let u=await getU(); if(!u) return; document.getElementById('bal').textContent=u.balance.toFixed(2); document.getElementById('earnedToday').textContent=u.earned.toFixed(2); document.getElementById('dayNum').textContent=u.day; let today=new Date().toDateString(); if(u.lastClaim===today) document.getElementById('claimBtn').textContent="Claimed"; if(u.lastYt===today) document.getElementById('ytBtn').textContent="Done"; }
+async function claimDaily(){ let u=await getU(); let today=new Date().toDateString(); if(u.lastClaim===today) return alert("Already claimed"); await window.updateDoc(window.doc(window.db,"users",currentUser),{balance:u.balance+0.10,earned:u.earned+0.10,day:u.day+1,lastClaim:today}); refreshUI(); alert("+$0.10"); }
+async function doYoutube(){ let u=await getU(); let today=new Date().toDateString(); if(u.lastYt===today) return alert("Done today"); window.open("https://youtube.com","_blank"); setTimeout(async()=>{let uu=await getU(); await window.updateDoc(window.doc(window.db,"users",currentUser),{balance:uu.balance+0.10,earned:uu.earned+0.10,lastYt:today}); refreshUI(); alert("You earned $0.10");},800); }
+async function cashout(){ let u=await getU(); if(u.balance<5) return alert("Min $5 - Balance $"+u.balance.toFixed(2)); alert("Withdrawal $"+u.balance.toFixed(2)+" sent to admin"); }
+function showAdmin(){ document.getElementById('authPage').classList.add('hidden'); document.getElementById('homePage').classList.add('hidden'); document.getElementById('adminPage').classList.remove('hidden'); document.getElementById('navBar').style.display='none'; }
+async function checkAdmin(){ if(document.getElementById('adminPass').value==="Biggest2026"){ document.getElementById('adminContent').classList.remove('hidden'); let snap=await window.getDocs(window.collection(window.db,"users")); document.getElementById('totalUsers').textContent=snap.size; document.getElementById('usersList').innerHTML=""; snap.forEach(d=>{let uu=d.data(); document.getElementById('usersList').innerHTML+=`<div class="userRow"><span>${d.id} - $${uu.balance.toFixed(2)}</span><span>${uu.email}</span></div>`}); } else alert("Wrong"); }
+function backHome(){ if(currentUser) showHome(); else {document.getElementById('adminPage').classList.add('hidden'); document.getElementById('authPage').classList.remove('hidden');}}
+function loadUser(){ if(currentUser) showHome(); else alert("Create account first"); }
+function logout(){ localStorage.removeItem("biggest_current"); location.reload(); }
+window.onload=()=>{ if(currentUser) showHome(); }
+</script>
+</body>
+  </html>
